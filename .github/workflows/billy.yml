@@ -4,7 +4,7 @@ on:
     branches:
       - main
   workflow_dispatch:
-  
+
 jobs:
   aqua:
     name: Aqua scanner
@@ -17,8 +17,16 @@ jobs:
         run: docker pull nginx:latest
 
       - name: Manifest Generation
+        env:
+          TRIVY_USERNAME: ${{ secrets.TRIVY_USERNAME }}
+          TRIVY_PASSWORD: ${{ secrets.TRIVY_PASSWORD }}
+          TRIVY_DB_REPOSITORY: registry.aquasec.com/trivy-db:2
+          TRIVY_JAVA_DB_REPOSITORY: registry.aquasec.com/trivy-java-db:1
+          TRIVY_CHECKS_BUNDLE_REPOSITORY: registry.aquasec.com/trivy-checks:1
+
         run: |
           export BILLY_SERVER=https://billy.dev-aqua.codesec.aquasec.com
+          
           curl -sLo install.sh download.codesec.aquasec.com/billy/install.sh
           BINDIR="." sh install.sh
           ./billy generate \
